@@ -1,0 +1,94 @@
+<?php
+
+/**
+ * implementation of Drupal's hook_menu
+ */
+function fake_islandora_menu() {
+  $i = 0;
+  //$root = fake_item_load(variable_get('fedora_repository_')
+  return array(
+    /*'fake_islandora' => array(
+      'title' => '',
+      'title callback' => 'fake_islandora_get_title',
+    ),*/
+    'fake_islandora/%fake_item' => array(
+      'title' => '',
+      'title callback' => 'fake_islandora_get_title',
+      'title arguments' => array(1),
+      'page callback' => 'fake_islandora_read',
+      'page arguments' => array(1),
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
+      'weight' => $i++,
+    ),
+    'fake_islandora/%fake_item/read' => array(
+      'title' => 'Read',
+      'page callback' => 'fake_islandora_read',
+      'page arguments' => array(1),
+      'access function' => 'fake_islandora_access',
+      'access arguments' => array(1, 'access content'),
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'weight' => $i++,
+    ),
+    'fake_islandora/%fake_item/update' => array(
+      'title' => 'Update',
+      'page callback' => 'fake_islandora_update',
+      'page arguments' => array(1),
+      'access arguments' => array('access content'),
+      'type' => MENU_LOCAL_TASK,
+      'weight' => $i++,
+    ),
+    'fake_islandora/%fake_item/create' => array(
+      'title' => 'Create',
+      'page callback' => 'fake_islandora_create',
+      'page arguments' => array(1),
+      'access arguments' => array('access content'),
+      'type' => MENU_LOCAL_TASK,
+      'weight' => $i++,
+    ),
+    'fake_islandora/%fake_item/delete' => array(
+      'title' => 'Delete',
+      'page callback' => 'fake_islandora_delete',
+      'page arguments' => array(1),
+      'access arguments' => array('access content'),
+      'type' => MENU_LOCAL_TASK,
+      'weight' => $i++,
+    ),
+  );
+}
+
+function fake_item_load($pid) {
+  module_load_include('inc', 'fedora_repository', 'api/fedora_item');
+  $item = new Fedora_Item($pid);
+  
+  if (!$item->exists()) {
+    return drupal_not_found();
+  }
+  else {
+    return $item;
+  }
+}
+
+function fake_islandora_get_title($item) {
+  return $item->objectProfile->objLabel;
+}
+
+function fake_islandora_access($item, $permission) {
+  return user_access($permission);
+}
+
+function fake_islandora_create($item) {
+  return 'Create: ' . fake_islandora_get_title($item);
+}
+
+function fake_islandora_read($item) {
+  return 'Read: ' . fake_islandora_get_title($item);
+}
+
+function fake_islandora_update($item) {
+  return 'Update: ' . fake_islandora_get_title($item);
+}
+
+function fake_islandora_delete($item) {
+  return 'Read: ' . fake_islandora_get_title($item);
+}
